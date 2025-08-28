@@ -1,0 +1,9 @@
+*.uvgui*.*
+
+sources/generated/*
+sources/MS-1/Objects/*
+sources/MS-1/Objects-Debug/*
+sources/MS-1/DebugConfig/*
+sources/MS-1/Listings/*
+sources/MS-1/Listings-Debug/*
+sources/MS-1/RTE/*

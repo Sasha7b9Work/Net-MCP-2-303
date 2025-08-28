@@ -38,7 +38,7 @@ namespace InterCom
 
         std::memcpy(&message[8], &value, sizeof(value));
 
-        uint hash = Math::CalculateCRC(&value, sizeof(value));
+        uint hash = Math::CalculateCRC(&message[0], 12);
 
         std::memcpy(&message[12], &hash, sizeof(hash));
 
