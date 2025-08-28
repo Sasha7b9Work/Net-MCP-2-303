@@ -15,7 +15,7 @@ cd ../..
 rmdir generated\ThirdParty /s /q
 cd scripts/ThirdParty
 @echo on
-cmake ../../VS/ThirdParty/wxWidgets/CMakeLists.txt -B../../generated/ThirdParty  -G "Visual Studio 17 2022" -A Win32 -DwxBUILD_SHARED=ON -DwxBUILD_USE_STATIC_RUNTIME=OFF -DwxBUILD_SAMPLES=ALL
+cmake ../../VS/ThirdParty/wxWidgets/CMakeLists.txt -B../../generated/ThirdParty  -G "Visual Studio 17 2022" -A Win32 -DwxBUILD_SHARED=OFF -DwxBUILD_USE_STATIC_RUNTIME=ON -DwxBUILD_SAMPLES=ALL
 @echo off
 
 :BUILDING
