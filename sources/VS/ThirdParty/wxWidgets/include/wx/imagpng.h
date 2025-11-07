@@ -27,6 +27,7 @@
 #define wxIMAGE_OPTION_PNG_COMPRESSION_MEM_LEVEL   wxT("PngZM")
 #define wxIMAGE_OPTION_PNG_COMPRESSION_STRATEGY    wxT("PngZS")
 #define wxIMAGE_OPTION_PNG_COMPRESSION_BUFFER_SIZE wxT("PngZB")
+#define wxIMAGE_OPTION_PNG_DESCRIPTION             wxT("PngDescription")
 
 enum
 {
@@ -50,10 +51,10 @@ public:
     static wxVersionInfo GetLibraryVersionInfo();
 
 #if wxUSE_STREAMS
-    virtual bool LoadFile( wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1 ) wxOVERRIDE;
-    virtual bool SaveFile( wxImage *image, wxOutputStream& stream, bool verbose=true ) wxOVERRIDE;
+    virtual bool LoadFile( wxImage *image, wxInputStream& stream, bool verbose=true, int index=-1 ) override;
+    virtual bool SaveFile( wxImage *image, wxOutputStream& stream, bool verbose=true ) override;
 protected:
-    virtual bool DoCanRead( wxInputStream& stream ) wxOVERRIDE;
+    virtual bool DoCanRead( wxInputStream& stream ) override;
 #endif
 
 private:

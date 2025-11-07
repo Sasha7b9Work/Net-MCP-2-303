@@ -2,7 +2,6 @@
 // Name:        src/osx/iphone/checkbox.mm
 // Purpose:     wxCheckBox
 // Author:      Stefan Csomor
-// Modified by:
 // Created:     2008-08-20
 // Copyright:   (c) Stefan Csomor
 // Licence:       wxWindows licence
@@ -43,13 +42,13 @@ public:
     {
         m_control = v;
     }
-    
+
     wxInt32  GetValue() const
     {
         return [m_control isOn] ? 1 : 0;
     }
-    
-    void SetValue( wxInt32 v ) 
+
+    void SetValue( wxInt32 v )
     {
         [m_control setOn:v != 0 animated:NO];
     }

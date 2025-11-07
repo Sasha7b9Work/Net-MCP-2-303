@@ -1,50 +1,61 @@
-April 24, 2025 -- The wxWidgets team is pleased to announce a new
-stable release of our open source framework for the development of native
+July 21, 2025 -- The wxWidgets team is pleased to announce the first new
+development release of our open source framework for the development of native
 cross-platform applications in C++.
 
-wxWidgets 3.2.8 is part of the API and ABI-stable 3.2.x release series and is
-now available from
+wxWidgets 3.3.1 is the second release in the 3.3.x development series coming
+soon after 3.3.0 and is mostly a bug fix release, correcting some regressions
+found in 3.3.0. The new version is available now from
 
     https://www.wxwidgets.org/downloads/
 
 and
 
-    https://github.com/wxWidgets/wxWidgets/releases/v3.2.8
+    https://github.com/wxWidgets/wxWidgets/releases/v3.3.1
+
+The most important fixes since 3.3.0 include:
+
+- Restore Windows date/time pickers behaviour under non-English OS (#25511).
+- Fix crash on startup under macOS when using Farsi as system language (#25561).
+- Fix losing wxGenericListCtrl contents after AppendColumn() (#25519).
+- Fix crash when sorting wxDataViewCtrl in wxGTK in some circumstances (#25625).
+- Fix crash when using per-window menu in Windows MDI applications (#25522).
+- Restore inadvertently broken API compatibility in wxPropertyGrid (#25627).
+
+There were also a number of fixes to the new Windows dark mode support:
+
+- Fix crash with wxStaticBitmap inside wxNotebook in dark mode (#25499).
+- Fix disabled wxButton bitmaps appearance in dark mode (#25575).
+- Fix disabled wxStaticText appearance in dark mode (#25574).
+- Fix notebook background in dark high contrast themes (#25542).
+- Fix regression in wxDataViewCtrl border in light mode (#25532).
+- Fix selected toolbar buttons in dark mode (Stefan Ziegler, #25616).
+- Fix wxComboCtrl appearance in dark mode (#23766).
+- Fix wxTE_RICH wxTextCtrl appearance in dark mode (#25602).
+
+And, finally, this release also contains a small number of new features:
+
+- Allow setting "app id" under supported platforms (Windows/Wayland) (#25548).
+- Add persistence support for wxRadioButtons (#25530) and wxCheckBox (#25515).
+- Add support for PNG "Description" text chunk to wxImage (#25556).
+- wxNumberFormatter improvements (#25614, #25635).
+
+Please see the change log
+
+https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.1/docs/changes.txt
+
+for the list of the other important changes.
 
 
-This is mostly a bug fix release correcting several problems found in the
-previous 3.2.7 release:
+This release is part of the "development" release series, but these development
+releases are suitable for production use: the only difference between them and
+"stable" releases is that neither ABI nor API stability is guaranteed in 3.3.x.
+However we strive to minimize API-incompatible changes even so and, in spite of
+a huge number of changes since the last stable version, this release remains
+almost fully API-compatible with wxWidgets 3.2 and updating the existing
+applications to use it should be straightforward. However please make sure to
+read the "INCOMPATIBLE CHANGES" section in the change log to be aware of the
+breaking changes in it.
 
-- Fix crash in wxPropertyGrid with wxGTK3 after recent change (#25286).
-- Fix padding of wxMenu in high DPI under Windows 11 (#25117).
-- Fix key codes in WXK_NUMPADx events in wxGTK (#25263).
-- Fix ABI breakage for versioned symbols in 3.2.7 (#25327).
-- Fix third party libraries build with Xcode 16.3.
-- Fix using OpenGL and WebView when using CMake install (#25266).
-
-But it still contains a couple of enhancements, including:
-
-- Add wxVector(std::initializer_list<U> list) ctor (#25290).
-- Add mouse scrolling support to generic wxSpinCtrl (#24935).
-- Add @USER@ macro to HTML and RichText printers (#25318).
-
-Other changes include:
-
-- Call OnExceptionInMainLoop() in wxGTK if idle event handler throws (#25312).
-- Compute wxStaticText best size ourselves if GTK does it wrongly (#24781).
-- Fix page count display in wxHtmlPrintout when there is only one page (#25320).
-- Miscellaneous CMake build improvements (#25324).
-- Fix new warnings with gcc 15 (#25338).
-- Update Brazilian Portuguese translations.
-
-Please see the full change log for more details:
-
-https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.2.8/docs/changes.txt
-
-This release is API and ABI-compatible with the previous 3.2.x, meaning that
-the existing applications don't even need to be rebuilt to profit from all the
-fixes above if they use shared/dynamic libraries. And if they do need to be
-recompiled, this can be done without any changes to the code.
 
 We hope that you will enjoy using the new release!
 

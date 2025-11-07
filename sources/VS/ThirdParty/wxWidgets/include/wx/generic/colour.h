@@ -2,7 +2,6 @@
 // Name:        wx/generic/colour.h
 // Purpose:     wxColour class
 // Author:      Julian Smart
-// Modified by:
 // Created:     01/02/97
 // Copyright:   (c) Julian Smart
 // Licence:     wxWindows licence
@@ -22,7 +21,10 @@ public:
     DEFINE_STD_WXCOLOUR_CONSTRUCTORS
 
     // copy ctors and assignment operators
-    wxDECLARE_DEFAULT_COPY_CTOR(wxColour)
+    wxColour(const wxColour& col)
+    {
+        *this = col;
+    }
 
     wxColour& operator=(const wxColour& col);
 

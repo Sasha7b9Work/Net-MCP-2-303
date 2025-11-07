@@ -2,7 +2,6 @@
 // Name:        src/osx/cocoa/glcanvas.mm
 // Purpose:     wxGLCanvas, for using OpenGL with wxWidgets under Macintosh
 // Author:      Stefan Csomor
-// Modified by:
 // Created:     1998-01-01
 // Copyright:   (c) Stefan Csomor
 // Licence:     wxWindows licence
@@ -107,7 +106,7 @@ WXGLPixelFormat WXGLChoosePixelFormat(const int *GLAttrs,
 
     attribs = data;
 
-    return [[NSOpenGLPixelFormat alloc] initWithAttributes:(NSOpenGLPixelFormatAttribute*) attribs];
+    return [[NSOpenGLPixelFormat alloc] initWithAttributes:attribs];
 }
 
 @interface wxNSCustomOpenGLView : NSOpenGLView
@@ -151,7 +150,7 @@ WXGLPixelFormat WXGLChoosePixelFormat(const int *GLAttrs,
 {
     // Prevent the NSOpenGLView from making it's own context
     // We want to force using wxGLContexts
-    return NULL;
+    return nullptr;
 }
 
 @end
@@ -164,15 +163,15 @@ bool wxGLCanvas::DoCreate(wxWindow *parent,
                           const wxString& name)
 {
     DontCreatePeer();
-    
+
     if ( !wxWindow::Create(parent, id, pos, size, style, name) )
         return false;
 
-    
+
     NSRect r = wxOSXGetFrameForControl( this, pos , size ) ;
     wxNSCustomOpenGLView* v = [[wxNSCustomOpenGLView alloc] initWithFrame:r];
     [v setWantsBestResolutionOpenGLSurface:YES];
-    
+
     wxWidgetCocoaImpl* c = new wxWidgetCocoaImpl( this, v, wxWidgetImpl::Widget_UserKeyEvents | wxWidgetImpl::Widget_UserMouseEvents );
     SetPeer(c);
     MacPostControlCreate(pos, size) ;

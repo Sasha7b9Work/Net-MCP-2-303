@@ -7,17 +7,20 @@
 # Licence:     wxWindows licence
 #############################################################################
 
-function(wx_webview_copy_webview2_loader target)
-    if(NOT WXMSW OR NOT wxUSE_WEBVIEW_EDGE OR NOT TARGET ${target})
-        return()
-    endif()
-
+macro(wx_set_webview2_arch)
     if(wxPLATFORM_ARCH)
         set(WEBVIEW2_ARCH ${wxPLATFORM_ARCH})
     else()
         set(WEBVIEW2_ARCH x86)
     endif()
+endmacro()
 
+function(wx_webview_copy_webview2_loader target)
+    if(NOT WXMSW OR NOT wxUSE_WEBVIEW_EDGE OR NOT TARGET ${target})
+        return()
+    endif()
+
+    wx_set_webview2_arch()
     add_custom_command(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         "${WEBVIEW2_PACKAGE_DIR}/build/native/${WEBVIEW2_ARCH}/WebView2Loader.dll"
@@ -26,7 +29,6 @@ endfunction()
 
 
 wx_append_sources(WEBVIEW_FILES WEBVIEW_CMN)
-
 if(WXMSW)
     wx_append_sources(WEBVIEW_FILES WEBVIEW_MSW)
 elseif(WXGTK)
@@ -42,9 +44,9 @@ if(APPLE)
 elseif(WXMSW)
     if(wxUSE_WEBVIEW_EDGE)
         # Update the following variables if updating WebView2 SDK
-        set(WEBVIEW2_VERSION "1.0.705.50")
+        set(WEBVIEW2_VERSION "1.0.1722.45")
         set(WEBVIEW2_URL "https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/${WEBVIEW2_VERSION}")
-        set(WEBVIEW2_SHA256 "6a34bb553e18cfac7297b4031f3eac2558e439f8d16a45945c22945ac404105d")
+        set(WEBVIEW2_SHA256 "10d78e9e11c7851f0a8bf0dd4c22bbf6383de45bd337e1be42240b103812947d")
 
         set(WEBVIEW2_DEFAULT_PACKAGE_DIR "${CMAKE_CURRENT_BINARY_DIR}/packages/Microsoft.Web.WebView2.${WEBVIEW2_VERSION}")
 
@@ -64,7 +66,14 @@ elseif(WXMSW)
             file(DOWNLOAD
                 ${WEBVIEW2_URL}
                 ${CMAKE_CURRENT_BINARY_DIR}/webview2.nuget
-                EXPECTED_HASH SHA256=${WEBVIEW2_SHA256})
+                EXPECTED_HASH SHA256=${WEBVIEW2_SHA256}
+                STATUS DOWNLOAD_RESULT)
+            # Check that the download was successful.
+            list(GET DOWNLOAD_RESULT 0 DOWNLOAD_RESULT_NUM)
+            if(NOT ${DOWNLOAD_RESULT_NUM} EQUAL 0)
+                list(GET DOWNLOAD_RESULT 1 DOWNLOAD_RESULT_STR)
+                message(FATAL_ERROR "Error ${DOWNLOAD_RESULT_NUM} downloading WebView2 SDK: ${DOWNLOAD_RESULT_STR}.")
+            endif()
             file(MAKE_DIRECTORY ${WEBVIEW2_PACKAGE_DIR})
             execute_process(COMMAND
                 "${CMAKE_COMMAND}" -E tar x "${CMAKE_CURRENT_BINARY_DIR}/webview2.nuget"
@@ -82,8 +91,9 @@ elseif(WXMSW)
         endif()
 
         if (wxUSE_WEBVIEW_EDGE_STATIC)
-            target_link_directories(wxwebview PUBLIC
-                $<BUILD_INTERFACE:${WEBVIEW2_PACKAGE_DIR}/build/native/$(LibrariesArchitecture)/>
+            wx_set_webview2_arch()
+            wx_lib_link_directories(wxwebview PUBLIC
+                $<BUILD_INTERFACE:${WEBVIEW2_PACKAGE_DIR}/build/native/${WEBVIEW2_ARCH}/>
             )
         else()
             wx_webview_copy_webview2_loader(wxwebview)
@@ -114,10 +124,7 @@ if(WXGTK AND wxUSE_WEBVIEW_WEBKIT2)
     set_target_properties(wxwebkit2_ext PROPERTIES NO_SONAME 1)
 
     # Change output name to match expected name in webview_webkit2.cpp: webkit2_ext*
-    set(lib_unicode)
-    if(wxUSE_UNICODE)
-        set(lib_unicode "u")
-    endif()
+    set(lib_unicode "u")
 
     set(lib_rls)
     set(lib_dbg)

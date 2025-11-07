@@ -2,7 +2,6 @@
 // Name:        src/osx/carbon/app.cpp
 // Purpose:     wxApp
 // Author:      Stefan Csomor
-// Modified by:
 // Created:     1998-01-01
 // Copyright:   (c) Stefan Csomor
 // Licence:     wxWindows licence
@@ -29,7 +28,6 @@
     #include "wx/dialog.h"
     #include "wx/msgdlg.h"
     #include "wx/textctrl.h"
-    #include "wx/memory.h"
     #include "wx/gdicmn.h"
     #include "wx/module.h"
 #endif
@@ -62,7 +60,7 @@ wxBEGIN_EVENT_TABLE(wxApp, wxEvtHandler)
 wxEND_EVENT_TABLE()
 
 
-wxWindow* wxApp::s_captureWindow = NULL ;
+wxWindow* wxApp::s_captureWindow = nullptr ;
 long      wxApp::s_lastModifiers = 0 ;
 
 long      wxApp::s_macAboutMenuItemId = wxID_ABOUT ;
@@ -163,7 +161,7 @@ void wxApp::MacReopenApp()
     // as hidden TLWs, so do preferences and some classes like wxTaskBarIconWindow use placeholder TLWs.
     // We don't want to reshow those, so let's just reopen the minimized a.k.a. iconized TLWs.
 
-    wxTopLevelWindow* firstIconized = NULL;
+    wxTopLevelWindow* firstIconized = nullptr;
     wxWindowList::compatibility_iterator node = wxTopLevelWindows.GetFirst();
 
     while (node)
@@ -171,7 +169,7 @@ void wxApp::MacReopenApp()
         wxTopLevelWindow* win = (wxTopLevelWindow*) node->GetData();
         if ( win->IsIconized() )
         {
-            if ( firstIconized == NULL )
+            if ( firstIconized == nullptr )
                 firstIconized = win;
         }
         else if ( win->IsShown() )
@@ -241,17 +239,10 @@ wxMacAssertOutputHandler(const char *WXUNUSED(componentName),
     wxString exceptionStr ;
     wxString errorStr ;
 
-#if wxUSE_UNICODE
     fileNameStr = wxString(fileName, wxConvLocal);
     assertionStr = wxString(assertionString, wxConvLocal);
-    exceptionStr = wxString((exceptionLabelString!=0) ? exceptionLabelString : "", wxConvLocal) ;
-    errorStr = wxString((errorString!=0) ? errorString : "", wxConvLocal) ;
-#else
-    fileNameStr = fileName;
-    assertionStr = assertionString;
-    exceptionStr = (exceptionLabelString!=0) ? exceptionLabelString : "" ;
-    errorStr = (errorString!=0) ? errorString : "" ;
-#endif
+    exceptionStr = wxString((exceptionLabelString!=nullptr) ? exceptionLabelString : "", wxConvLocal) ;
+    errorStr = wxString((errorString!=nullptr) ? errorString : "", wxConvLocal) ;
 
     // turn this on, if you want the macOS asserts to flow into log, otherwise they are handled via wxOnAssert
 #if 0
@@ -278,7 +269,7 @@ bool wxApp::Initialize(int& argc, wxChar **argv)
      -NSShowAllViews YES.  Cocoa picks these up from the real argv so
      our removal of them from the wx copy of it does not affect Cocoa's
      ability to see them.
-     
+
      We basically just assume that any "-NS" option and its following
      argument needs to be removed from argv.  We hope that user code does
      not expect to see -NS options and indeed it's probably a safe bet
@@ -306,7 +297,12 @@ bool wxApp::Initialize(int& argc, wxChar **argv)
         return false;
 
 #if wxUSE_INTL
-    wxFont::SetDefaultEncoding(wxLocale::GetSystemEncoding());
+    // Check if we recognize the system encoding. Note that we must not call
+    // SetDefaultEncoding() if we don't, as indicated by wxFONTENCODING_DEFAULT
+    // being returned, as SetDefaultEncoding() would assert in this case.
+    const wxFontEncoding defaultEncoding = wxLocale::GetSystemEncoding();
+    if ( defaultEncoding != wxFONTENCODING_DEFAULT )
+        wxFont::SetDefaultEncoding(defaultEncoding);
 #endif
 
     // these might be the startup dirs, set them to the 'usual' dir containing the app bundle
@@ -318,7 +314,7 @@ bool wxApp::Initialize(int& argc, wxChar **argv)
         CFRelease( url ) ;
         CFStringRef path = CFURLCopyFileSystemPath ( urlParent , kCFURLPOSIXPathStyle ) ;
         CFRelease( urlParent ) ;
-        wxString cwd = wxCFStringRef(path).AsString(wxLocale::GetSystemEncoding());
+        wxString cwd = wxCFStringRef(path).AsString();
         wxSetWorkingDirectory( cwd ) ;
     }
 
@@ -346,7 +342,7 @@ bool wxApp::OnInitGui()
         return false;
 
 #ifdef __WXOSX_COCOA__
-    CGDisplayRegisterReconfigurationCallback(wxCGDisplayReconfigurationCallBack, NULL);
+    CGDisplayRegisterReconfigurationCallback(wxCGDisplayReconfigurationCallBack, nullptr);
 #endif
 
     return true ;
@@ -367,13 +363,14 @@ int wxApp::OnRun()
 void wxApp::CleanUp()
 {
     wxMacAutoreleasePool autoreleasepool;
+
+    wxAppBase::CleanUp();
+
 #if wxUSE_TOOLTIPS
     wxToolTip::RemoveToolTips() ;
 #endif
 
     DoCleanUp();
-
-    wxAppBase::CleanUp();
 }
 
 //----------------------------------------------------------------------
@@ -384,9 +381,11 @@ wxApp::wxApp()
 {
     m_printMode = wxPRINT_WINDOWS;
 
-    m_macCurrentEvent = NULL ;
-    m_macCurrentEventHandlerCallRef = NULL ;
-    m_macPool = sm_isEmbedded ? NULL : new wxMacAutoreleasePool();
+    m_macCurrentEvent = nullptr ;
+    m_macCurrentEventHandlerCallRef = nullptr ;
+    m_macPool = sm_isEmbedded ? nullptr : new wxMacAutoreleasePool();
+
+    WXAppConstructed();
 }
 
 wxApp::~wxApp()
@@ -397,8 +396,8 @@ wxApp::~wxApp()
 
 CFMutableArrayRef GetAutoReleaseArray()
 {
-    static CFMutableArrayRef array = 0;
-    if ( array == 0)
+    static CFMutableArrayRef array = nullptr;
+    if ( array == nullptr)
         array= CFArrayCreateMutable(kCFAllocatorDefault,0,&kCFTypeArrayCallBacks);
     return array;
 }
@@ -478,7 +477,7 @@ void wxApp::MacHandleUnhandledEvent( WXEVENTREF WXUNUSED(evr) )
 CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
 {
     CGKeyCode keycode;
-    
+
     switch (code)
     {
         // Clang warns about switch values not of the same type as (enumerated)
@@ -516,7 +515,7 @@ CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
         case 'x': case 'X':   keycode = kVK_ANSI_X; break;
         case 'y': case 'Y':   keycode = kVK_ANSI_Y; break;
         case 'z': case 'Z':   keycode = kVK_ANSI_Z; break;
-            
+
         case '0':             keycode = kVK_ANSI_0; break;
         case '1':             keycode = kVK_ANSI_1; break;
         case '2':             keycode = kVK_ANSI_2; break;
@@ -531,19 +530,19 @@ CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
 #ifdef __clang__
     #pragma clang diagnostic pop
 #endif // __clang__
-            
+
         case WXK_BACK:        keycode = kVK_Delete; break;
         case WXK_TAB:         keycode = kVK_Tab; break;
         case WXK_RETURN:      keycode = kVK_Return; break;
         case WXK_ESCAPE:      keycode = kVK_Escape; break;
         case WXK_SPACE:       keycode = kVK_Space; break;
         case WXK_DELETE:      keycode = kVK_ForwardDelete; break;
-            
+
         case WXK_SHIFT:       keycode = kVK_Shift; break;
         case WXK_ALT:         keycode = kVK_Option; break;
         case WXK_RAW_CONTROL: keycode = kVK_Control; break;
         case WXK_CONTROL:     keycode = kVK_Command; break;
-            
+
         case WXK_CAPITAL:     keycode = kVK_CapsLock; break;
         case WXK_END:         keycode = kVK_End; break;
         case WXK_HOME:        keycode = kVK_Home; break;
@@ -551,10 +550,10 @@ CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
         case WXK_UP:          keycode = kVK_UpArrow; break;
         case WXK_RIGHT:       keycode = kVK_RightArrow; break;
         case WXK_DOWN:        keycode = kVK_DownArrow; break;
-            
+
         case WXK_HELP:        keycode = kVK_Help; break;
-            
-            
+
+
         case WXK_NUMPAD0:     keycode = kVK_ANSI_Keypad0; break;
         case WXK_NUMPAD1:     keycode = kVK_ANSI_Keypad1; break;
         case WXK_NUMPAD2:     keycode = kVK_ANSI_Keypad2; break;
@@ -585,10 +584,10 @@ CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
         case WXK_F18:         keycode = kVK_F18; break;
         case WXK_F19:         keycode = kVK_F19; break;
         case WXK_F20:         keycode = kVK_F20; break;
-            
+
         case WXK_PAGEUP:      keycode = kVK_PageUp; break;
         case WXK_PAGEDOWN:    keycode = kVK_PageDown; break;
-            
+
         case WXK_NUMPAD_DELETE:    keycode = kVK_ANSI_KeypadClear; break;
         case WXK_NUMPAD_EQUAL:     keycode = kVK_ANSI_KeypadEquals; break;
         case WXK_NUMPAD_MULTIPLY:  keycode = kVK_ANSI_KeypadMultiply; break;
@@ -596,12 +595,12 @@ CGKeyCode wxCharCodeWXToOSX(wxKeyCode code)
         case WXK_NUMPAD_SUBTRACT:  keycode = kVK_ANSI_KeypadMinus; break;
         case WXK_NUMPAD_DECIMAL:   keycode = kVK_ANSI_KeypadDecimal; break;
         case WXK_NUMPAD_DIVIDE:    keycode = kVK_ANSI_KeypadDivide; break;
-            
+
         default:
             wxLogDebug( "Unrecognised keycode %d", code );
             keycode = static_cast<CGKeyCode>(-1);
     }
-    
+
     return keycode;
 }
 
@@ -819,7 +818,7 @@ bool wxApp::MacSendCharEvent( wxWindow* focus , long keymessage , long modifiers
 void wxApp::MacCreateKeyEvent( wxKeyEvent& event, wxWindow* focus , long keymessage , long modifiers , long when , wxChar uniChar )
 {
 #if wxOSX_USE_COCOA_OR_CARBON
-    
+
     short keycode, keychar ;
 
     keychar = short(keymessage & charCodeMask);
@@ -886,9 +885,7 @@ void wxApp::MacCreateKeyEvent( wxKeyEvent& event, wxWindow* focus , long keymess
     event.m_altDown = modifiers & optionKey;
     event.m_controlDown = modifiers & cmdKey;
     event.m_keyCode = keyval ;
-#if wxUSE_UNICODE
     event.m_uniChar = uniChar ;
-#endif
 
     event.m_rawCode = keymessage;
     event.m_rawFlags = modifiers;

@@ -184,6 +184,6 @@ add_executable( ${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    wxbase32ud wxmsw32ud_core wxpngd wxzlibd
+    wxbase33ud wxmsw33ud_core wxpngd wxzlibd
     Ws2_32 Comctl32 Rpcrt4
 )

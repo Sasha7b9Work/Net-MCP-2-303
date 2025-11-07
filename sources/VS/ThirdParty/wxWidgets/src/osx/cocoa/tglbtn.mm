@@ -3,7 +3,6 @@
 // Purpose:     Definition of the wxToggleButton class, which implements a
 //              toggle button under wxMac.
 // Author:      Stefan Csomor
-// Modified by:
 // Created:     08.02.01
 // Copyright:   (c) Stefan Csomor
 // Licence:     wxWindows licence
@@ -90,7 +89,7 @@ wxWidgetImplType* wxWidgetImpl::CreateBitmapToggleButton( wxWindowMac* wxpeer,
     wxNSButton* v = [[wxNSButton alloc] initWithFrame:r];
 
     SetToggleButtonStyle(v, style);
-    
+
     if (label.IsOk())
         [v setImage: wxOSXGetImageFromBundle(label) ];
 
